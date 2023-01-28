@@ -16,7 +16,6 @@ export class CreateTodoItemDto {
   @IsEmpty()
   user: User;
 
-  @IsEnum(TodoStatusEnum)
-  @IsOptional()
+  @IsEmpty()
   status: TodoStatusEnum;
 }

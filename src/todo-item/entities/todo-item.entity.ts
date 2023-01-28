@@ -14,9 +14,8 @@ import { User } from '../../user/entities/user.entity';
 
 @Entity()
 export class TodoItem {
-  @PrimaryGeneratedColumn()
-  @ObjectIdColumn()
-  id: ObjectID;
+  @ObjectIdColumn({ name: 'id' })
+  _id: ObjectID;
 
   @Column()
   name: string;

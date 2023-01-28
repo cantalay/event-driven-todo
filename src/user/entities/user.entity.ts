@@ -4,15 +4,13 @@ import {
   Entity,
   ObjectID,
   ObjectIdColumn,
-  PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 
 @Entity()
 export class User {
-  @PrimaryGeneratedColumn()
-  @ObjectIdColumn()
-  id: ObjectID;
+  @ObjectIdColumn({ name: 'id' })
+  _id: ObjectID;
 
   @Column({
     unique: true,
