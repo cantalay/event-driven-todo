@@ -1,11 +1,13 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { UserModule } from './user/user.module';
 import { TodoItemModule } from './todo-item/todo-item.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { join } from 'path';
-import { DataSource } from 'typeorm';
+import { AuditlogModule } from './auditlog/auditlog.module';
+import { EventModule } from './event/event.module';
+import { APP_GUARD } from '@nestjs/core';
+import { JwtAuthGuard } from './auth/guard/jwt-auth.guard';
+import { AuthModule } from './auth/auth.module';
 
 //TODO: Generate configmap here
 @Module({
@@ -18,12 +20,17 @@ import { DataSource } from 'typeorm';
       useNewUrlParser: true,
       logging: true,
     }),
-    UserModule,
     TodoItemModule,
+    UserModule,
+    AuthModule,
+    AuditlogModule,
+    EventModule,
   ],
-  controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    {
+      provide: APP_GUARD,
+      useClass: JwtAuthGuard,
+    },
+  ],
 })
-export class AppModule {
-  constructor(private dataSource: DataSource) {}
-}
+export class AppModule {}

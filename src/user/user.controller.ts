@@ -6,19 +6,17 @@ import {
   Param,
   Patch,
   Post,
+  UseInterceptors,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { AuditLogInterceptor } from '../auditlog/audit-log.interceptor';
+import { ActionTypeEnum } from '../common/enums/action-type.enum';
 
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
-
-  @Post()
-  create(@Body() createUserDto: CreateUserDto) {
-    return this.userService.create(createUserDto);
-  }
 
   @Get()
   findAll() {
@@ -31,11 +29,13 @@ export class UserController {
   }
 
   @Patch(':id')
+  @UseInterceptors(AuditLogInterceptor(ActionTypeEnum.USER_UPDATE))
   update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
     return this.userService.update(id, updateUserDto);
   }
 
   @Delete(':id')
+  @UseInterceptors(AuditLogInterceptor(ActionTypeEnum.USER_DELETE))
   remove(@Param('id') id: string) {
     return this.userService.remove(id);
   }

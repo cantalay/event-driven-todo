@@ -14,7 +14,7 @@ import { User } from '../../user/entities/user.entity';
 
 @Entity()
 export class TodoItem {
-  @ObjectIdColumn({ name: 'id' })
+  @ObjectIdColumn()
   _id: ObjectID;
 
   @Column()
@@ -32,7 +32,6 @@ export class TodoItem {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @ManyToOne(() => User)
-  @JoinColumn()
-  user: User;
+  @Column()
+  userName: string;
 }

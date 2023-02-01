@@ -6,10 +6,11 @@ import {
   ObjectIdColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { Exclude } from 'class-transformer';
 
 @Entity()
 export class User {
-  @ObjectIdColumn({ name: 'id' })
+  @ObjectIdColumn()
   _id: ObjectID;
 
   @Column({
@@ -19,6 +20,10 @@ export class User {
 
   @Column()
   fullName: string;
+
+  @Column()
+  @Exclude()
+  password: string;
 
   @CreateDateColumn()
   createdAt: Date;
