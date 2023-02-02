@@ -6,6 +6,7 @@ import { AuditlogDto } from '../dto/auditlog.dto';
 import { AuditlogTypeEnum } from '../enums/auditlog-type.enum';
 import { AuditlogFilterDto } from '../dto/auditlog-filter.dto';
 import { ActionTypeEnum } from '../../common/enums/action-type.enum';
+import { AuditResponseDto } from '../dto/audit-response.dto';
 
 @Injectable()
 export class AuditlogService {
@@ -33,23 +34,25 @@ export class AuditlogService {
     return this.auditlogRepository.save(auditlog);
   }
 
-  findAll(auditlogFilterDto: AuditlogFilterDto) {
+  async findAll(auditlogFilterDto: AuditlogFilterDto) {
     const auditFilter = {
       where: {
         $and: [],
       },
+      take: 10,
+      skip: 0,
     };
-    if (auditlogFilterDto.users.length) {
+    if (auditlogFilterDto.users && auditlogFilterDto.users.length > 0) {
       auditFilter.where.$and.push({
         userName: { $in: [...auditlogFilterDto.users] },
       });
     }
-    if (auditlogFilterDto.actions.length) {
+    if (auditlogFilterDto.actions && auditlogFilterDto.actions.length > 0) {
       auditFilter.where.$and.push({
         action: { $in: [...auditlogFilterDto.actions] },
       });
     }
-    if (auditlogFilterDto.type.length) {
+    if (auditlogFilterDto.type) {
       auditFilter.where.$and.push({ type: auditlogFilterDto.type });
     }
     if (auditlogFilterDto.todoId) {
@@ -58,8 +61,27 @@ export class AuditlogService {
       });
     }
     if (!auditFilter.where.$and.length) {
-      return this.auditlogRepository.find();
+      delete auditFilter.where;
     }
-    return this.auditlogRepository.find(auditFilter);
+    if (auditlogFilterDto.pagination) {
+      if (
+        auditlogFilterDto.pagination.page &&
+        auditlogFilterDto.pagination.pageSize
+      ) {
+        auditFilter.take = auditlogFilterDto.pagination.pageSize;
+        auditFilter.skip =
+          (auditlogFilterDto.pagination.page - 1) *
+          auditlogFilterDto.pagination.pageSize;
+      }
+    }
+
+    const [result, count] = await this.auditlogRepository.findAndCount(
+      auditFilter,
+    );
+    const auditResponseDto: AuditResponseDto = {
+      data: result,
+      count: count,
+    };
+    return auditResponseDto;
   }
 }

@@ -1,5 +1,6 @@
 import { IsArray, IsNotEmpty, IsOptional } from 'class-validator';
 import { ActionTypeEnum } from '../../common/enums/action-type.enum';
+import { PaginationDto } from './pagination.dto';
 
 export class AuditlogFilterDto {
   @IsOptional()
@@ -15,4 +16,7 @@ export class AuditlogFilterDto {
 
   @IsOptional()
   todoId: string;
+
+  @IsOptional()
+  pagination: PaginationDto;
 }
