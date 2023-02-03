@@ -24,38 +24,41 @@ export function AuditLogInterceptor(action: ActionTypeEnum): any {
 
     intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
       return next.handle().pipe(
-        tap((response) => {
+        tap(async (response) => {
           const req = context.switchToHttp().getRequest();
           const method: string = req.method;
-          const userInfo: string = req.user;
+          const userInfo = req.user || req.body;
           const executionDate: Date =
             RequestMethod[method] === RequestMethod.POST
               ? response.createdAt
               : response.updatedAt;
 
-          const todoId = action.includes('TODO') ? response._id : null;
+          const todoId: string = action.includes('TODO')
+            ? response._id.toString()
+            : null;
 
           this.auditlogService.createAuditLog(
             action,
             AuditlogTypeEnum.COMMAND,
             executionDate,
             userInfo,
-            todoId,
+            todoId ? todoId.toString() : null,
           );
-          this.publisherService.publishEvent(
+          const isPublish: boolean = await this.publisherService.publishEvent(
             action,
             userInfo,
-            todoId,
+            todoId ? todoId.toString() : null,
             executionDate,
           );
-
-          this.auditlogService.createAuditLog(
-            action,
-            AuditlogTypeEnum.EVENT,
-            executionDate,
-            userInfo,
-            todoId,
-          );
+          if (isPublish) {
+            this.auditlogService.createAuditLog(
+              action,
+              AuditlogTypeEnum.EVENT,
+              executionDate,
+              userInfo,
+              todoId ? todoId.toString() : null,
+            );
+          }
         }),
       );
     }

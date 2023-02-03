@@ -13,8 +13,8 @@ export class Auditlog {
   @ObjectIdColumn()
   _id: ObjectID;
 
-  @ObjectIdColumn()
-  todoId: ObjectID;
+  @Column()
+  todoId: string;
 
   @Column()
   userName: string;

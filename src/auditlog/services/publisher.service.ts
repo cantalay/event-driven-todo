@@ -16,7 +16,7 @@ export class PublisherService {
     userInfo,
     todoId: string,
     executionTime: Date,
-  ) {
+  ): Promise<boolean> {
     const logPublisherDto: LogPublisherDto = new LogPublisherDto();
     logPublisherDto.todoId = todoId;
     logPublisherDto.userName = userInfo.userName;
@@ -29,5 +29,6 @@ export class PublisherService {
         logPublisherDto,
       });
     });
+    return webhookList.length > 0;
   }
 }

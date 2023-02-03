@@ -63,7 +63,7 @@ export class TodoItemService {
   }
 
   async assignToUser(todoId: string, userId: string) {
-    const userItem: User = await this.userService.findOne(userId);
+    const userItem: User = await this.userService.findOneById(userId);
     const todoItem: TodoItem = await this.todoItemRepository.findOneBy(todoId);
     if (userItem && todoItem) {
       todoItem.userName = userItem.userName;

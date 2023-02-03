@@ -1,12 +1,16 @@
-import { Injectable, RequestMethod } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { MongoRepository } from 'typeorm';
+import { MongoRepository, ObjectID } from 'typeorm';
 import { Auditlog } from '../entities/auditlog.entity';
 import { AuditlogDto } from '../dto/auditlog.dto';
 import { AuditlogTypeEnum } from '../enums/auditlog-type.enum';
 import { AuditlogFilterDto } from '../dto/auditlog-filter.dto';
 import { ActionTypeEnum } from '../../common/enums/action-type.enum';
 import { AuditResponseDto } from '../dto/audit-response.dto';
+import { QueryItemDto } from '../dto/query-item.dto';
+import { ObjectLiteral } from 'typeorm/common/ObjectLiteral';
+import { ReadPreference } from 'typeorm/driver/mongodb/typings';
+import { ObjectId } from 'mongodb';
 
 @Injectable()
 export class AuditlogService {
@@ -33,6 +37,22 @@ export class AuditlogService {
     const auditlog = this.auditlogRepository.create(auditlogDto);
     return this.auditlogRepository.save(auditlog);
   }
+  async getQueryItem(queryType: string): Promise<string[]> {
+    switch (queryType) {
+      case 'userName':
+        return await this.auditlogRepository.distinct('userName', {
+          where: { userName: 'alicant' },
+        });
+      case 'todoId':
+        return await this.auditlogRepository.distinct('todoId', {});
+      case 'action':
+        return await this.auditlogRepository.distinct('action', {});
+      case 'type':
+        return await this.auditlogRepository.distinct('type', {});
+      default:
+        return [];
+    }
+  }
 
   async findAll(auditlogFilterDto: AuditlogFilterDto) {
     const auditFilter = {
@@ -42,9 +62,9 @@ export class AuditlogService {
       take: 10,
       skip: 0,
     };
-    if (auditlogFilterDto.users && auditlogFilterDto.users.length > 0) {
+    if (auditlogFilterDto.userName && auditlogFilterDto.userName.length > 0) {
       auditFilter.where.$and.push({
-        userName: { $in: [...auditlogFilterDto.users] },
+        userName: { $regex: auditlogFilterDto.userName },
       });
     }
     if (auditlogFilterDto.actions && auditlogFilterDto.actions.length > 0) {
@@ -57,7 +77,7 @@ export class AuditlogService {
     }
     if (auditlogFilterDto.todoId) {
       auditFilter.where.$and.push({
-        todoId: auditlogFilterDto.todoId,
+        todoId: { $regex: auditlogFilterDto.todoId },
       });
     }
     if (!auditFilter.where.$and.length) {
@@ -74,7 +94,6 @@ export class AuditlogService {
           auditlogFilterDto.pagination.pageSize;
       }
     }
-
     const [result, count] = await this.auditlogRepository.findAndCount(
       auditFilter,
     );
