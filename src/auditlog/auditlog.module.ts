@@ -5,12 +5,12 @@ import { Auditlog } from './entities/auditlog.entity';
 import { AuditlogController } from './auditlog.controller';
 import { HttpModule } from '@nestjs/axios';
 import { PublisherService } from './services/publisher.service';
-import { EventModule } from '../event/event.module';
+import { SubscriberModule } from '../subscriber/subscriber.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([Auditlog]),
-    EventModule,
+    SubscriberModule,
     HttpModule.register({ timeout: 5000, maxRedirects: 5 }),
   ],
   providers: [AuditlogService, PublisherService],

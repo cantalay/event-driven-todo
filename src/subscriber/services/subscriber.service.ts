@@ -6,7 +6,7 @@ import { CreateSubscriberDto } from '../dto/create-subscriber.dto';
 import { ActionTypeEnum } from '../../common/enums/action-type.enum';
 
 @Injectable()
-export class EventService {
+export class SubscriberService {
   constructor(
     @InjectRepository(Subscriber)
     private eventRepository: MongoRepository<Subscriber>,

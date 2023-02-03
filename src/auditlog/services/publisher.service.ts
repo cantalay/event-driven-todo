@@ -1,13 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { ActionTypeEnum } from '../../common/enums/action-type.enum';
 import { HttpService } from '@nestjs/axios';
-import { EventService } from '../../event/services/event.service';
+import { SubscriberService } from '../../subscriber/services/subscriber.service';
 import { LogPublisherDto } from '../dto/log-publisher.dto';
 
 @Injectable()
 export class PublisherService {
   constructor(
-    private eventService: EventService,
+    private eventService: SubscriberService,
     private readonly httpService: HttpService,
   ) {}
 

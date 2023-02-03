@@ -4,7 +4,7 @@ import { TodoItemModule } from './todo-item/todo-item.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { join } from 'path';
 import { AuditlogModule } from './auditlog/auditlog.module';
-import { EventModule } from './event/event.module';
+import { SubscriberModule } from './subscriber/subscriber.module';
 import { APP_GUARD } from '@nestjs/core';
 import { JwtAuthGuard } from './auth/guard/jwt-auth.guard';
 import { AuthModule } from './auth/auth.module';
@@ -24,7 +24,7 @@ import { AuthModule } from './auth/auth.module';
     UserModule,
     AuthModule,
     AuditlogModule,
-    EventModule,
+    SubscriberModule,
   ],
   providers: [
     {
